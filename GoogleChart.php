@@ -28,7 +28,7 @@ class GoogleChart extends Widget
      * @var string $packages the type of packages, default is corechart
      * @see https://google-developers.appspot.com/chart/interactive/docs/gallery
      */
-    public $packages = ['corechart'];  // such as 'orgchart' and so on.
+    public $packages = ['corechart'];  // such as ['orgchart'] and so on.
 
     /**
      * @var array $data the data to configure visualization
