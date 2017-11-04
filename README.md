@@ -2,8 +2,8 @@ Yii2 Google Chats
 ================
 [![Latest Stable Version](https://poser.pugx.org/claudejanz/yii2-google-charts/v/stable.svg)](https://packagist.org/packages/claudejanz/yii2-google-charts) [![Total Downloads](https://poser.pugx.org/claudejanz/yii2-google-charts/downloads.svg)](https://packagist.org/packages/claudejanz/yii2-google-charts) [![Latest Unstable Version](https://poser.pugx.org/claudejanz/yii2-google-charts/v/unstable.svg)](https://packagist.org/packages/claudejanz/yii2-google-charts) [![License](https://poser.pugx.org/claudejanz/yii2-google-charts/license.svg)](https://packagist.org/packages/claudejanz/yii2-google-charts)
 
-Yii2 Google Chats extention 
-This plugin don't relaod main librairies on Pjax calls
+Yii2 Google Chats extention. 
+This plugin don't reload main librairies on Pjax calls.
 
 Installation
 ------------
