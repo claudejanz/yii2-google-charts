@@ -3,21 +3,20 @@
 namespace claudejanz\googlecharts;
 
 use Yii;
-use yii\base\Widget;
+use yii\base\InvalidConfigException;
+use yii\bootstrap\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\View;
 
-/**
- * This is just an example.
- */
 class GoogleChart extends Widget
 {
 
     /**
-     * @var string $containerId the container Id to render the visualization to
+     * @var array the HTML attributes for the widget container tag.
+     * @see Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $containerId;
+    public $options = [];
 
     /**
      * @var string $visualization the type of visualization -ie PieChart
@@ -29,59 +28,57 @@ class GoogleChart extends Widget
      * @var string $packages the type of packages, default is corechart
      * @see https://google-developers.appspot.com/chart/interactive/docs/gallery
      */
-    public $packages = 'corechart';  // such as 'orgchart' and so on.
-    public $loadVersion = "1"; //such as 1 or 1.1  Calendar chart use 1.1.  Add at Sep 16
+    public $packages = ['corechart'];  // such as 'orgchart' and so on.
 
     /**
      * @var array $data the data to configure visualization
      * @see https://google-developers.appspot.com/chart/interactive/docs/datatables_dataviews#arraytodatatable
      */
-    public $data = array();
+    public $data;
 
     /**
-     * @var array $options additional configuration options
+     * @var array $pluginOptions additional configuration options
      * @see https://google-developers.appspot.com/chart/interactive/docs/customizing_charts
      */
-    public $options = array();
+    public $pluginOptions = [];
 
-    /**
-     * @var string $scriptAfterArrayToDataTable additional javascript to execute after arrayToDataTable is called
-     */
-    public $scriptAfterArrayToDataTable = '';
-
-    /**
-     * @var array $htmlOption the HTML tag attributes configuration
-     */
-    public $htmlOptions = array();
+    public function init()
+    {
+        if (!$this->data) {
+            throw new InvalidConfigException("Must have 'data' to be specified.");
+        }
+        if (!$this->visualization) {
+            throw new InvalidConfigException("Must have 'visualization' to be specified.");
+        }
+        parent::init();
+    }
 
     public function run()
     {
-
-        $id = $this->getId();
-        if (isset($this->options['id']) and ! empty($this->options['id']))
-            $id = $this->options['id'];
-        // if no container is set, it will create one
-        if ($this->containerId == null) {
-            $this->htmlOptions['id'] = 'div-chart' . $id;
-            $this->containerId = $this->htmlOptions['id'];
-            echo '<div ' . Html::renderTagAttributes($this->htmlOptions) . '></div>';
+        // set id if not set
+        if (!isset($this->options['id'])) {
+            $this->options['id'] = $this->getId();
         }
+        $id = $this->options['id'];
+        // create container
+        echo Html::tag('div', null, $this->options);
         $this->registerClientScript($id);
-        //return Html::encode($this->message);
+        parent::run();
     }
 
     public function registerClientScript($id)
     {
 
         $jsData = Json::encode($this->data);
-        $jsOptions = Json::encode($this->options);
-        $script = "var $id = new google.visualization.$this->visualization(document.getElementById('$this->containerId')); $id.draw( google.visualization.arrayToDataTable($jsData), $jsOptions);";
+        $jsOptions = Json::encode($this->pluginOptions);
+        $jsPackages = Json::encode($this->packages);
         $view = $this->getView();
-        if (!Yii::$app->request->isAjax) {
-            $view->registerJsFile('https://www.google.com/jsapi', ['position' => View::POS_END]);
-            $view->registerJs('google.load("visualization", "' . $this->loadVersion . '", {packages:["' . $this->packages . '"]});', View::POS_END);
+        if (!Yii::$app->request->isPjax) {
+            $view->registerJsFile('https://www.gstatic.com/charts/loader.js', ['position' => View::POS_HEAD]);
+            $view->registerJs("google.charts.load('current', {packages: $jsPackages});", View::POS_HEAD);
         }
-        $view->registerJs($script, View::POS_READY, $id);
+        $script = "var $id = new google.visualization.$this->visualization(document.getElementById('$id'));$id.draw( google.visualization.arrayToDataTable($jsData), $jsOptions);";
+        $view->registerJs($script, View::POS_LOAD, $id);
     }
 
 }
