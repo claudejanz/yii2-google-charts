@@ -78,7 +78,7 @@ class GoogleChart extends Widget
             $view->registerJs("google.charts.load('current', {packages: $jsPackages});", View::POS_HEAD);
         }
         $script = "var $id = new google.visualization.$this->visualization(document.getElementById('$id'));$id.draw( google.visualization.arrayToDataTable($jsData), $jsOptions);";
-        $view->registerJs($script, View::POS_LOAD, $id);
+        $view->registerJs($script, View::POS_READY, $id);
     }
 
 }
