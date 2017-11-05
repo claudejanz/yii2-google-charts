@@ -73,12 +73,15 @@ class GoogleChart extends Widget
         $jsOptions = Json::encode($this->pluginOptions);
         $jsPackages = Json::encode($this->packages);
         $view = $this->getView();
-        if (!Yii::$app->request->isPjax) {
-            $view->registerJsFile('https://www.gstatic.com/charts/loader.js', ['position' => View::POS_HEAD]);
-            $view->registerJs("google.charts.load('current', {packages: $jsPackages});", View::POS_HEAD);
-        }
         $script = "var $id = new google.visualization.$this->visualization(document.getElementById('$id'));$id.draw( google.visualization.arrayToDataTable($jsData), $jsOptions);";
-        $view->registerJs($script, View::POS_READY, $id);
+        if (!Yii::$app->request->isPjax) {
+            $view->registerJsFile('https://www.gstatic.com/charts/loader.js', ['position' => View::POS_END]);
+            $view->registerJs("google.charts.load('current', {packages: $jsPackages});", View::POS_END);
+            $view->registerJs("function drawChart_$id(){ $script};", View::POS_END, $id);
+            $view->registerJs("google.charts.setOnLoadCallback(drawChart_$id);", View::POS_END);
+        } else {
+            $view->registerJs($script, View::POS_END, $id);
+        }
     }
 
 }
