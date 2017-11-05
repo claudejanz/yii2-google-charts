@@ -77,8 +77,8 @@ class GoogleChart extends Widget
         if (!Yii::$app->request->isPjax) {
             $view->registerJsFile('https://www.gstatic.com/charts/loader.js', ['position' => View::POS_END]);
             $view->registerJs("google.charts.load('current', {packages: $jsPackages});", View::POS_END);
-            $view->registerJs("function drawChart_$id(){ $script};", View::POS_END, $id);
             $view->registerJs("google.charts.setOnLoadCallback(drawChart_$id);", View::POS_END);
+            $view->registerJs("function drawChart_$id(){ $script};", View::POS_END, $id);
         } else {
             $view->registerJs($script, View::POS_END, $id);
         }
